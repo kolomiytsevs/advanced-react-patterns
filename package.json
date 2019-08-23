@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The updated version of my advanced react component patterns course",
   "keywords": [],
-  "homepage": "http://advanced-react-patterns.netlify.com/",
+  "homepage": "http://advanced-react-patterns.netlifnpy.com/",
   "main": "src/index.js",
   "dependencies": {
     "hoist-non-react-statics": "^2.5.5",

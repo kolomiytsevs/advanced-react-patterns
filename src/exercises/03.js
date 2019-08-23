@@ -44,22 +44,40 @@ import {Switch} from '../switch'
 //   (newlines are ok, like in the above example)
 
 // 🐨 create a ToggleContext with React.createContext here
+const SwitchContext = React.createContext()
 
 class Toggle extends React.Component {
   // 🐨 each of these compound components will need to be changed to use
   // ToggleContext.Consumer and rather than getting `on` and `toggle`
   // from props, it'll get it from the ToggleContext.Consumer value.
-  static On = ({on, children}) => (on ? children : null)
-  static Off = ({on, children}) => (on ? null : children)
-  static Button = ({on, toggle, ...props}) => (
-    <Switch on={on} onClick={toggle} {...props} />
+  static On = ({children}) => (
+    <SwitchContext.Consumer>
+      {({on}) => (on ? children : null)}
+    </SwitchContext.Consumer>
   )
-  state = {on: false}
+
+  static Off = ({children}) => (
+    <SwitchContext.Consumer>
+      {({on}) => (on ? null : children)}
+    </SwitchContext.Consumer>
+  )
+
+  static Button = props => (
+    <SwitchContext.Consumer>
+      {({on, toggle}) => (
+        <Switch on={on} onClick={toggle} {...props} />
+      )}
+    </SwitchContext.Consumer>
+  )
+
   toggle = () =>
     this.setState(
       ({on}) => ({on: !on}),
       () => this.props.onToggle(this.state.on),
     )
+
+  //if doing it like this, state has to be decalred below the toggle method.
+  state = {on: false, toggle: this.toggle}
   render() {
     // Because this.props.children is _immediate_ children only, we need
     // to 🐨 remove this map function and render our context provider with
@@ -67,12 +85,20 @@ class Toggle extends React.Component {
     // expose the `on` state and `toggle` method as properties in the context
     // value (the value prop).
 
-    return React.Children.map(this.props.children, child =>
+    //updated the value from passing on and the toggle functiont o just pass this.state to prevent excessive rerending as this.state is
+    //an obect and so it doesn't change.
+
+    return (
+      <SwitchContext.Provider value={this.state}>
+        {this.props.children}
+      </SwitchContext.Provider>
+    )
+    /*React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
         on: this.state.on,
         toggle: this.toggle,
       }),
-    )
+    )*/
   }
 }
 
@@ -81,7 +107,7 @@ class Toggle extends React.Component {
 // attempt to render one of the compound components outside the Toggle.
 // 💯 Extra credit: avoid unnecessary re-renders of the consumers by not
 // creating a new `value` object ever render and instead passing an object
-// which only changes when the state changes.
+// which only changes when the state changes.+
 
 // Don't make changes to the Usage component. It's here to show you how your
 // component is intended to be used and is used in the tests.
