@@ -21,7 +21,10 @@ class Toggle extends React.Component {
     // You'll notice the children prop in the Usage component
     // is a function. 🐨 So you can replace this with a call this.props.children()
     // But you'll need to pass it an object with `on` and `toggle`.
-    return <Switch on={on} onClick={this.toggle} />
+    return this.props.children({
+      on: this.state.on,
+      toggle: this.toggle,
+    })
   }
 }
 
@@ -49,3 +52,10 @@ function Usage({
 Usage.title = 'Render Props'
 
 export {Toggle, Usage as default}
+
+// Why not just have the simple class, render both as components underneath? This is the other way round.
+// The functional component which would normally not hold any state (and still doesn't) now acts as a parent
+// to the conitionally rendered components.
+// In a normal, all the state is stored in the class and both the button etc would have to be children,
+// alternatively we could just pass the state to a child components.
+// The idea here is to seperate the logic from the ui.
